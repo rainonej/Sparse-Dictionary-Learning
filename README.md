@@ -27,10 +27,15 @@ Of course since $D$ spans $\mathbb{R}^d$, this is an overdetermined problem.
 We add a constraint that the $L_0$-norm of $\vec{\alpha}$ is bounded by a 
 constant $L$. 
 This gives the optimization problem 
+
 $$ \|\vec{y}_i - D \vec{\alpha}_i \|_2 \quad s.t. \|\vec{\alpha}_i\|_0\leq L$$
+
 or rather: Find the $D$ and $A=[ \vec{\alpha}_1, \dots, \vec{\alpha}_N ]$ so that 
+
 $$ \| Y - D A \|_2$$ 
+
 is minimized for $Y = [\vec{y}_1, \dots, \vec{y}_N]$,  subject to the contraint
+
 $$ \|\vec{\alpha}\|_0\leq L.$$
 
 
