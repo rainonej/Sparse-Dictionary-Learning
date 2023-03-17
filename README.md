@@ -72,9 +72,14 @@ which randomly samples 20% of the patches in order to reconstruct the image.
 It then gives an accurate (slightly higher) estimate of the error which a true image
 reconstruction would have. 
 
+# Usage
+Save your train
+```azure
+train_dictionary.py --training_images image_paths.yaml --training_params training_params.yaml --output_dictionary_path test_dictionary.pkl
+```
 
 
-
+dsd
 
 Rarity Enhancement (not using yet)
 https://arxiv.org/ftp/arxiv/papers/1305/1305.0871.pdf
@@ -105,7 +110,7 @@ $x+y$
 
 
 
-#%% md
+
 ## Comparison
 
 Here are the results of a few tests. Note that these tests are purely to get an idea of what the algorithms are capable of. A full battery of tests will be preformed in another notebook.
