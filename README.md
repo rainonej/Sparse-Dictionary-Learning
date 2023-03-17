@@ -28,3 +28,11 @@ https://www.di.ens.fr/~fbach/mairal_icml09.pdf
 Caption 1: This is the caption for the first image.
 
 Caption 2: This is the caption for the second image.
+
+
+## Cost Function
+$$R := \bigcup_{|I|\leq L} span\{\vec{v}_{I_1}, \dots, \vec{v}_{I_L}\}$$
+
+$x+y$
+
+
