@@ -1,6 +1,7 @@
 # The training parameters
-N : 300
-K : 100
-I : 5
-L : 4
-P : 8
+N : 66
+K : 65
+I : 0
+L : 1
+Patch_Shape : [8,8]
+Partial : False

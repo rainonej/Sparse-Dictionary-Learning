@@ -1,5 +1,15 @@
 # Sparse-Dictionary-Learning
  
+This repo demonstrates the capabilities of Sparse Dictionary Learning 
+on image reconstruction and denoising. 
+
+### Mathematical Overview
+
+Each image is broken up into "patches", usually 8x8 block. 
+This are the fundamental objects we work with.
+Each patch can be represented by a vector $v$ 
+$$x+y$$
+
 The algorithms used:
 
 k-SVD

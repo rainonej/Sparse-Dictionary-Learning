@@ -30,8 +30,9 @@ num_samples = params['N']
 L = params['L']
 K = params['K']
 I = params['I']
+patch_shape = np.array(params['Patch_Shape'])
 
-sam = Sampler(paths = paths, num_samples = num_samples, patch_shape=np.array([8,8]))
+sam = Sampler(paths = paths, num_samples = num_samples, patch_shape=patch_shape)
 print('got sampler')
 
 learner = DictionaryLearner(L=L, K=K, sampler=sam, algo='OMP')
