@@ -5,3 +5,4 @@ lis: #typo here
 - 2
 - path2
 name: John
+shape: [8,8]

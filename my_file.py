@@ -13,8 +13,12 @@ args = parser.parse_args()
 import yaml
 with open(args.training_params, 'r') as file:
     my_data = yaml.load(file, Loader=yaml.FullLoader)
+import numpy as np
+print(type(np.array(my_data['shape'])))
 
 # Access arguments
 print(args.training_images)
 print(my_data)
 print(args.output_dictionary_path)
+
+#%%
