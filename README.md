@@ -18,7 +18,9 @@ as a $d\times K$ matrix. $\alpha$
 
 Each patch $8\times 8$ patch has a vector representation $\vec{y} \in \mathbb{R}^d$. 
 This vector $\vec{y}$ has a "sparse representation" $\vec{x}$. 
+
 $$ \vec{y} \approx \vec{x} := D \vec{\alpha}$$
+
 The best representation of $\vec{y}$ is the vector $\vec{\alpha}$ which minimizes
 
 $$ ||\vec{y} - D \vec{\alpha} ||_2$$
@@ -28,26 +30,29 @@ We add a constraint that the $L_0$-norm of $\vec{\alpha}$ is bounded by a
 constant $L$. 
 This gives the optimization problem 
 
-$$ \|\vec{y}_i - D \vec{\alpha}_i \|_2 \quad s.t. \|\vec{\alpha}_i\|_0\leq L$$
+$$ ||\vec{y}_i - D \vec{\alpha}_i ||_2 \quad s.t. ||\vec{\alpha}_i||_0\leq L$$
 
 or rather: Find the $D$ and $A=[ \vec{\alpha}_1, \dots, \vec{\alpha}_N ]$ so that 
 
-$$ \| Y - D A \|_2$$ 
+$$ || Y - D A ||_2$$ 
 
 is minimized for $Y = [\vec{y}_1, \dots, \vec{y}_N]$,  subject to the contraint
 
-$$ \|\vec{\alpha}\|_0\leq L.$$
+$$ ||\vec{\alpha}||_0\leq L.$$
 
 
-$$x+y$$
+### Algorithms
 
-The algorithms used:
+Analytically finding optimal sparse representation requires preforming ${K \choose L}$ 
+computations, which is unreasonable. In stead, we use an approximate form. 
+There are many algorithms that do this, but we use Orthogonal Matching Pursuit and Matching Pursuit. 
 
-k-SVD
-https://legacy.sites.fas.harvard.edu/~cs278/papers/ksvd.pdf
+Finding the optimal dictionary is equally difficult. We are using that k-SVD algorithm, 
+first proposed in this paper: https://legacy.sites.fas.harvard.edu/~cs278/papers/ksvd.pdf. 
+We are slightly modifying the algorithm by replacing unused atoms as soon as they are skipped over. 
+We are replacing them with the worst respresented signal. This method was examined and 
+determined to be optimimal in the following paper: https://cs.unibuc.ro//~pirofti/papers/Irofti16_AtomReplacement.pdf.
 
-Atom Replacement
-https://cs.unibuc.ro//~pirofti/papers/Irofti16_AtomReplacement.pdf
 
 Rarity Enhancement (not using yet)
 https://arxiv.org/ftp/arxiv/papers/1305/1305.0871.pdf
