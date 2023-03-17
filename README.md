@@ -67,10 +67,7 @@ amount of information. In fact, when the patches are randomly sampled,
 the first 20% of the patches contain 90-95% of the information. This was confirmed experimentally 
 in this Classes.ipynb notebook. We present the results below. 
 
-|<img alt="Caption 1" height="300" src="SPIR_graph.jpg" width="400"/>
 ![Graph](SPIR_graph.jpg)
-<img alt="Graph" height="300" src="SPIR_graph.jpg" width="400"/>
-
 
 This leads to the creation of the Stochastic Partial Image Reconstruction (SPIR) algorithm
 which randomly samples 20% of the patches in order to reconstruct the image. 
@@ -78,7 +75,12 @@ It then gives an accurate (slightly higher) estimate of the error which a true i
 reconstruction would have. 
 
 # Usage
-Have a parameters file saved as a .yaml file. You can edit these values as you see fit.
+
+First you must train the dictionary. To do that, follow the following steps. 
+
+Have a parameters file saved as a .yaml file. 
+You can edit these values as you see fit. 
+You will be asked to enter the path to this fill after --training_parameters.
 ```azure
 # This is the parameters.yaml file
 N : 300 # The batch size when random sampling your training data.
@@ -90,6 +92,7 @@ Partial : False # If False, you will get the full image reconstruction algorithm
 ```
 
 Have a image_paths.yaml file which contains the paths to the training images.
+You will be asked to enter the path to this file after --image_paths
 ```azure
 # This is the image_paths.yaml file. It contains a list of all the paths that the training images will be pulled from.
 paths:
@@ -97,6 +100,10 @@ paths:
     - octopus_test_image.jpg
 ```
 
+Know the path you want you dictionary to end up at. 
+You will be asked to enter this path after --output_dictionary_path
+
+Execute the code
 ```azure
 train_dictionary.py --training_images image_paths.yaml --training_params training_params.yaml --output_dictionary_path test_dictionary.pkl
 ```
