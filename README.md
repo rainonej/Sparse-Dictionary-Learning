@@ -26,7 +26,7 @@ The best representation of $\vec{y}$ is the vector $\vec{\alpha}$ which minimize
 $$ ||\vec{y} - D \vec{\alpha} ||_2$$
 
 Of course since $D$ spans $\mathbb{R}^d$, this is an overdetermined problem. 
-We add a constraint that the $L_0$-norm of $\vec{\alpha}$ is bounded by a 
+We add a constraint that the $L^0$-norm of $\vec{\alpha}$ is bounded by a 
 constant $L$. 
 This gives the optimization problem 
 
@@ -52,6 +52,28 @@ first proposed in this paper: https://legacy.sites.fas.harvard.edu/~cs278/papers
 We are slightly modifying the algorithm by replacing unused atoms as soon as they are skipped over. 
 We are replacing them with the worst respresented signal. This method was examined and 
 determined to be optimimal in the following paper: https://cs.unibuc.ro//~pirofti/papers/Irofti16_AtomReplacement.pdf.
+
+### Error Determination
+
+Because the algorithms are designed to minimize the $L^2$-distance between the signal and its 
+sparse representation, that is the error metric we will be using (after normalizing by an appropriate constant). 
+This is also the metric used in most papers on the subject (including those linked in this ReadMe).
+
+### Stochastic Partial Image Reconstruction
+
+Reconstructing an image is extremely costly, since we have to preform approximatly 
+1 sparse coding operation per pixel in the image. However, every patch contains the same 
+amount of information. In fact, when the patches are randomly sampled, 
+the first 20% of the patches contain 90-95% of the information. This was confirmed experimentally 
+in this Classes.ipynb notebook. We present the results below. 
+
+
+
+This leads to the creation of the Stochastic Partial Image Reconstruction (SPIR) algorithm
+which randomly samples 20% of the patches in order to reconstruct the image. 
+It then gives an accurate (slightly higher) estimate of the error which a true image
+reconstruction would have. 
+
 
 
 Rarity Enhancement (not using yet)
