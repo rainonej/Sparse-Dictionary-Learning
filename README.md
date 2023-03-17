@@ -67,12 +67,12 @@ amount of information. In fact, when the patches are randomly sampled,
 the first 20% of the patches contain 90-95% of the information. This was confirmed experimentally 
 in this Classes.ipynb notebook. We present the results below. 
 
-
-
 This leads to the creation of the Stochastic Partial Image Reconstruction (SPIR) algorithm
 which randomly samples 20% of the patches in order to reconstruct the image. 
 It then gives an accurate (slightly higher) estimate of the error which a true image
 reconstruction would have. 
+
+
 
 
 
@@ -104,3 +104,42 @@ $$R := \bigcup_{|I|\leq L} span\{\vec{v}_{I_1}, \dots, \vec{v}_{I_L}\}$$
 $x+y$
 
 
+
+#%% md
+## Comparison
+
+Here are the results of a few tests. Note that these tests are purely to get an idea of what the algorithms are capable of. A full battery of tests will be preformed in another notebook.
+
+ALl tests are run by compressing and reconstructing a single image. The algorithm is trained and tested on the same image.
+
+I = number of iterations of the dictionary learning algorithm (k-SVD)
+K = number of atoms
+L = max number of atoms allowed in a sparse representation
+N = number of random samples provided (batch size) at each step
+
+### Dictionary Learning Iterations
+How many iterations (I = num_iters) of the dictionary learning (k-SVD) algorithm do we need to run? Note that at I=0 our atoms are initialized as random patches of our image.
+
+| I = 0 | I = 1 | I = 10 | Original |
+|-------|-------|--------|----------|
+| <img alt="Recon 0" height="300" src="recon0_small_gray_dinner.png" width="400"/> | <img alt="Recon 1" height="300" src="recon_small_gray_dinner.png" width="400"/> | <img alt="Recon 10" height="300" src="recon10_small_gray_dinner.png" width="400"/> | <img alt="Original" height="300" src="small_gray_dinner.png" width="400"/> |
+
+Notice how there isn't much of a difference.
+
+### Batch Size
+How many samples should I provide? Both experiments were preformed with I=10
+
+ N=100  | N=500                                          | Original |
+-------|------------------------------------------------|----------|
+| <img alt="Recon 1" height="300" src="recon10_small_gray_dinner.png" width="400"/> | <img alt="Recon 10" height="300" src="recon10K500_small_gray_dinner.png" width="400"/> | <img alt="Original" height="300" src="small_gray_dinner.png" width="400"/> |
+
+Again, not much of a change.
+
+### Atoms in the Sparse Representation
+How many atoms should I use in the sparse representation?
+
+ L=5 | L=20                                                                                   | Original |
+-------|----------------------------------------------------------------------------------------|----------|
+| <img alt="Recon 1" height="300" src="recon10K500_small_gray_dinner.png" width="400"/> | <img alt="Recon 10" height="300" src="reconI10L20_small_gray_dinner.png" width="400"/> | <img alt="Original" height="300" src="small_gray_dinner.png" width="400"/> |
+
+We finally have a dramatic improvement. It seems that of all the parameters, L is by far the most important.
