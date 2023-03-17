@@ -8,10 +8,10 @@ on image reconstruction and denoising.
 Each image is broken up into "patches", usually 8x8 block. 
 This are the fundamental objects we work with.
 Each patch can be represented by a single vector 
-$v\in \mathbb{R}^d$ where $d=(8x8)=64$. (Here we are assuming our image is in gray scale, 
+$v\in \mathbb{R}^d$ where $d=(8\times 8)=64$. (Here we are assuming our image is in gray scale, 
 however this works perfectly fine in color where d = (8x8x3).)
 
-Select a set $D:=\{u_i\}_{i=1}^K \subset \mathbb{R}^d$ of unit vectors, called "atoms". 
+Select a set $D:=\{ u_i \}_{i=1}^K \subset \mathbb{R}^d$ of unit vectors, called "atoms". 
 It is important that $K>d$, so the set may be spanning (almost always is spanning) 
 but is never a basis. The set $D$ is called a "dictionary" and typically is viewed 
 as a $d\times K$ matrix. 
@@ -20,7 +20,7 @@ Each patch $8\times 8$ patch has a vector representation $\vec{y} \in \mathbb{R}
 This vector $\vec{y}$ has a "sparse representation" $\vec{x}$. 
 $$ \vec{y} \approx \vec{x} := D \vec{\alpha}$$
 The best representation of $\vec{y}$ is the vector $\vec{\alpha}$ which minimizes
-$$ \|\vec{y} - D \vec{\alpha} \|_2$$
+$$ ||\vec{y} - D \vec{\alpha} ||_2$$
 
 Of course since $D$ spans $\mathbb{R}^d$, this is an overdetermined problem. 
 We add a constraint that the $L_0$-norm of $\vec{\alpha}$ is bounded by a 
