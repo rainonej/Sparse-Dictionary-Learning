@@ -13,3 +13,18 @@ https://arxiv.org/ftp/arxiv/papers/1305/1305.0871.pdf
 
 Online Coding (not using yet)
 https://www.di.ens.fr/~fbach/mairal_icml09.pdf
+
+<img alt="alt text" height="300" src="small_gray_dinner.png" width="400"/>
+<img alt="alt text" height="300" src="small_gray_dinner.png" width="400"/>
+
+| Title 1 | Title 2 |
+|---------|---------|
+| <img alt="Caption 1" height="300" src="small_gray_dinner.png" width="400"/> | <img alt="Caption 2" height="300" src="small_gray_dinner.png" width="400"/> |
+
+| Title 1 | Title 2                                     |
+|---------|---------------------------------------------|
+| <img alt="Caption 1" height="300" src="small_gray_dinner.png" width="400"/> | <img alt="Caption 2" height="300" src="small_gray_dinner.png" width="400"/> |
+
+Caption 1: This is the caption for the first image.
+
+Caption 2: This is the caption for the second image.
