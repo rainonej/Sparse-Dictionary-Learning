@@ -78,6 +78,8 @@ reconstruction would have.
 
 First you must train the dictionary. To do that, follow the following steps. 
 
+#### Dictionary Training
+
 Have a parameters file saved as a .yaml file. 
 You can edit these values as you see fit. 
 You will be asked to enter the path to this fill after --training_parameters.
@@ -100,14 +102,46 @@ paths:
     - octopus_test_image.jpg
 ```
 
-Know the path you want you dictionary to end up at. 
+Know the path you want you dictionary to end up at. This will be pickled, 
+so it is suggested that the file path end in '.pkl'. 
 You will be asked to enter this path after --output_dictionary_path
 
 Execute the code
 ```azure
-train_dictionary.py --training_images image_paths.yaml --training_params training_params.yaml --output_dictionary_path test_dictionary.pkl
+train_dictionary.py --training_images image_paths.yaml --training_params params.yaml --output_dictionary_path test_dictionary.pkl
 ```
 
+Your dictionary is now stored as a pickle file in the file path you entered.
+
+#### Image Reconstruction
+
+Recall the .pkl path that your dictionary is stored in. You can use the one you just 
+created, or use a different one. You will be asked to enter this path after
+--input_dictionary_path
+
+Have a parameters.yaml file. This is the EXACT same file as before.
+You will be asked to enter the path to this fill after --reconstruction_parameters.
+
+```azure
+# This is the parameters.yaml file
+N : 300 # The batch size when random sampling your training data.
+K : 150 # Number of atoms in the dictionary.
+I : 10 # Number of iterations to run the k-SVD algorithm to train your dictionary. Values are typically between 0 and 20.
+L : 10 # Number of atoms to use in sparse coding. Inscreased values increase preformance at the cost of run time.
+Patch_Shape : [8,8] # This size of the patches in pixels. If the image has color, set it equal to [8,8,3].
+Partial : False # If False, you will get the full image reconstruction algorithm. If True, you will get the Stochastic Partial Image Reconstruction (SPIR) algorithm. This will take about 20% of the time as the full agorithm, be about 90-90% as accurate, but will most likely have dead pixels on the sides.
+```
+
+Know the path of the input image. This will be the image you want reconstructed. 
+You will be asked to enter it after --input_image_path.
+
+Know the path where you want your reconstructed image to go.
+You will be asked to enter it after --output_image_path.
+
+Run the code
+```azure
+image_reconstruction.py --input_dictionary_path test_dictionary.pkl --reconstruction_params params.yaml --input_image_path small_gray_dinner.jpg --output_image_path test_image.jpg
+```
 
 dsd
 
