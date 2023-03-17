@@ -142,40 +142,23 @@ Run the code
 ```azure
 image_reconstruction.py --input_dictionary_path test_dictionary.pkl --reconstruction_params params.yaml --input_image_path small_gray_dinner.jpg --output_image_path test_image.jpg
 ```
+#### Example 
+There is an example of how to follow these instruction in Example.ipynb
 
-dsd
+## Tests and Test Results
+There are plenty of tests, test results, and images in the notebook Test.ipynb
 
-Rarity Enhancement (not using yet)
-https://arxiv.org/ftp/arxiv/papers/1305/1305.0871.pdf
+## Process
+The process of defining all of the Classes and code is recorded in detail in 
+Classes.ipynb
 
-Online Coding (not using yet)
-https://www.di.ens.fr/~fbach/mairal_icml09.pdf
+## Code
+All of the actual code is stored in Classes.py.
+Note that this contains the exact same information as in Classes.ipynb. 
+The only difference is that the note book will be easier to read if you want the 
+full story, and the python file will be easier to read if you know what you're looking for. 
 
-<img alt="alt text" height="300" src="small_gray_dinner.png" width="400"/>
-<img alt="alt text" height="300" src="small_gray_dinner.png" width="400"/>
-
-| Title 1 | Title 2 |
-|---------|---------|
-| <img alt="Caption 1" height="300" src="small_gray_dinner.png" width="400"/> | <img alt="Caption 2" height="300" src="small_gray_dinner.png" width="400"/> |
-
-| Title 1 | Title 2                                     |
-|---------|---------------------------------------------|
-| <img alt="Caption 1" height="300" src="small_gray_dinner.png" width="400"/> | <img alt="Caption 2" height="300" src="small_gray_dinner.png" width="400"/> |
-
-Caption 1: This is the caption for the first image.
-
-Caption 2: This is the caption for the second image.
-
-
-## Cost Function
-$$R := \bigcup_{|I|\leq L} span\{\vec{v}_{I_1}, \dots, \vec{v}_{I_L}\}$$
-
-$x+y$
-
-
-
-
-## Comparison
+## Example Results: Comparison
 
 Here are the results of a few tests. Note that these tests are purely to get an idea of what the algorithms are capable of. A full battery of tests will be preformed in another notebook.
 
