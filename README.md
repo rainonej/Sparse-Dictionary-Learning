@@ -73,7 +73,25 @@ It then gives an accurate (slightly higher) estimate of the error which a true i
 reconstruction would have. 
 
 # Usage
-Save your train
+Have a parameters file saved as a .yaml file. You can edit these values as you see fit.
+```azure
+# This is the parameters.yaml file
+N : 300 # The batch size when random sampling your training data.
+K : 150 # Number of atoms in the dictionary.
+I : 10 # Number of iterations to run the k-SVD algorithm to train your dictionary. Values are typically between 0 and 20.
+L : 10 # Number of atoms to use in sparse coding. Inscreased values increase preformance at the cost of run time.
+Patch_Shape : [8,8] # This size of the patches in pixels. If the image has color, set it equal to [8,8,3].
+Partial : False # If False, you will get the full image reconstruction algorithm. If True, you will get the Stochastic Partial Image Reconstruction (SPIR) algorithm. This will take about 20% of the time as the full agorithm, be about 90-90% as accurate, but will most likely have dead pixels on the sides.
+```
+
+Have a image_paths.yaml file which contains the paths to the training images.
+```azure
+# This is the image_paths.yaml file. It contains a list of all the paths that the training images will be pulled from.
+paths:
+    - Compressed Images/cheese_board.jpg
+    - octopus_test_image.jpg
+```
+
 ```azure
 train_dictionary.py --training_images image_paths.yaml --training_params training_params.yaml --output_dictionary_path test_dictionary.pkl
 ```
