@@ -97,7 +97,7 @@ class Sampler:
             """
 
             # Get a random patch from the image
-            patch = get_ith_patch(large_shape, self.patch_shape, random.randint(0, num_patches))
+            patch = get_ith_patch(large_shape, self.patch_shape, random.randint(0, num_patches-1))
 
             return (img1[patch].flatten(), img2[patch].flatten())
 
