@@ -1,0 +1,5 @@
+{
+  "name": "John", // This is the name field
+  "age": 30, // This is the age field
+  "city": "New York"
+}
