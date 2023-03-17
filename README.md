@@ -67,6 +67,11 @@ amount of information. In fact, when the patches are randomly sampled,
 the first 20% of the patches contain 90-95% of the information. This was confirmed experimentally 
 in this Classes.ipynb notebook. We present the results below. 
 
+|<img alt="Caption 1" height="300" src="SPIR_graph.jpg" width="400"/>
+![Graph](SPIR_graph.jpg)
+<img alt="Graph" height="300" src="SPIR_graph.jpg" width="400"/>
+
+
 This leads to the creation of the Stochastic Partial Image Reconstruction (SPIR) algorithm
 which randomly samples 20% of the patches in order to reconstruct the image. 
 It then gives an accurate (slightly higher) estimate of the error which a true image
