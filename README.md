@@ -195,3 +195,13 @@ How many atoms should I use in the sparse representation?
 | <img alt="Recon 1" height="300" src="recon10K500_small_gray_dinner.png" width="400"/> | <img alt="Recon 10" height="300" src="reconI10L20_small_gray_dinner.png" width="400"/> | <img alt="Original" height="300" src="small_gray_dinner.png" width="400"/> |
 
 We finally have a dramatic improvement. It seems that of all the parameters, L is by far the most important.
+
+
+# Where to Spend Compute?
+There are lot different parameters to tweak. Here is a break down 
+of which parameters cost more run time and decrease error.
+
+![Graph](where_spend_compute.png)
+
+As you can see, increase the number of atoms is by far the most 
+cost effective way to decrease error. 
