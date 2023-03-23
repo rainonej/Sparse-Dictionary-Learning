@@ -10,6 +10,7 @@ import numpy as np
 import random
 import cv2
 from tqdm.notebook import tqdm
+import time
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -353,6 +354,7 @@ class DictionaryLearner:
         self.sampler = sampler
         self.select_algorithm(algo)
         self.errors = []
+        self.dictionary_learning_time = 0
 
         self.update_dictionary_kSVD = update_dictionary_kSVD
         self.update_step()
@@ -423,6 +425,9 @@ class DictionaryLearner:
             D = Y[:, random.sample(range(N), k=K)]
             D = D / np.linalg.norm(D, axis=0)
 
+        # Start the timer
+        start_time = time.time()
+
         for step in tqdm(range(iters)):
 
             # Get the batch of random samples
@@ -437,6 +442,10 @@ class DictionaryLearner:
 
             # Update the Dictionary
             (D, A) = update_dictionary(Y, Y_orig, D, A)
+
+        # Calculate and Update the Learning Time
+        run_time = time.time() - start_time
+        self.dictionary_learning_time += run_time
 
         # Record the error one last time
         A = sparse_rep(Y, D, L)
@@ -559,3 +568,7 @@ class DictionaryLearner:
         recon_img = np.clip(recon_img, 0, 255).astype(np.uint8)
 
         return (recon_img, error)
+
+    def update_EVALUATION_METRICS(self, img_orig, img_recon, img_corrupted = False):
+
+
