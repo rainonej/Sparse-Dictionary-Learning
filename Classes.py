@@ -499,7 +499,7 @@ class DictionaryLearner:
 
         return recon_img
 
-    def SPIR(self, path, percent = .2, min_count = 1):
+    def SPIR(self, path, percent = .2, min_count = 1, apply_filter = False):
 
         # Get internal stuff for ease of use
         D = self.Dictionary
@@ -507,7 +507,11 @@ class DictionaryLearner:
         patch_size = patch_shape[0]
         L = self.L
 
-        img = load_image(path)
+        img_orig = load_image(path)
+        if apply_filter:
+            img = sam.filter(img_orig)
+        else:
+            img = img_orig
         large_shape = img.shape
         num_rows, num_cols = large_shape[:2]
         num_patches_rows = num_rows - patch_size + 1
