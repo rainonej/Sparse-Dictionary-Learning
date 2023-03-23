@@ -417,7 +417,7 @@ class DictionaryLearner:
         update_dictionary = self.update_dictionary
 
         # Get Initial Dictionary if there is none
-        if D == None:
+        if D is None:
             (Y, _) = sampler.sample()
             N = len(Y[0, :])
             D = Y[:, random.sample(range(N), k=K)]
