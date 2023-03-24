@@ -344,7 +344,7 @@ def update_dictionary_kSVD(Y, D, A):
 
 class DictionaryLearner:
 
-    def __init__(self, L=5, K=100, sampler = None, algo = None, Dictionary = None):
+    def __init__(self, L=5, K=100, sampler = None, algo = None, Dictionary = None, previous_iters = 0):
 
         assert L<K, f"The total number of atoms, K={K}, must be greater than the maximum number of allowed atoms per sparse representation, L = {L}"
 
@@ -355,6 +355,7 @@ class DictionaryLearner:
         self.select_algorithm(algo)
         self.errors = []
         self.dictionary_learning_time = 0
+        self.iters = 0
 
         self.update_dictionary_kSVD = update_dictionary_kSVD
         self.update_step()
@@ -443,6 +444,7 @@ class DictionaryLearner:
             # Update the Dictionary
             (D, A) = update_dictionary(Y, Y_orig, D, A)
 
+
         # Calculate and Update the Learning Time
         run_time = time.time() - start_time
         self.dictionary_learning_time += run_time
@@ -454,6 +456,9 @@ class DictionaryLearner:
 
         # Update Dictionary
         self.Dictionary = D
+
+        # Update the Iters count
+        self.iters += iters
 
         if output:
             return D
@@ -510,6 +515,9 @@ class DictionaryLearner:
 
     def SPIR(self, path, percent = .2, min_count = 1, apply_filter = False):
 
+        # Start the timer
+        start_time = time.time()
+
         # Get internal stuff for ease of use
         D = self.Dictionary
         patch_shape = self.sampler.patch_shape
@@ -518,7 +526,7 @@ class DictionaryLearner:
 
         img_orig = load_image(path)
         if apply_filter:
-            img = sam.filter(img_orig)
+            img = self.sampler.filter(img_orig)
         else:
             img = img_orig
         large_shape = img.shape
@@ -557,6 +565,10 @@ class DictionaryLearner:
             # Increment the counter variable and update the progress bar
             pbar.update(1)
 
+        # Calculate and Update the Reconstruction Time
+        run_time = time.time() - start_time
+        self.reconstruction_time = run_time
+
         temp_recon = recon_img.copy().flatten()
         temp_count = count.copy().flatten()
         temp_img = img.copy().flatten()
@@ -567,8 +579,103 @@ class DictionaryLearner:
         recon_img = recon_img // count
         recon_img = np.clip(recon_img, 0, 255).astype(np.uint8)
 
+        # Testing the New Function
+        self.update_EVALUATION_METRICS(temp_indices, img_orig, recon_img, img_corrupted=img, )
+
         return (recon_img, error)
 
-    def update_EVALUATION_METRICS(self, img_orig, img_recon, img_corrupted = False):
+    def update_EVALUATION_METRICS(self, temp_indicies, img_orig, img_recon, img_corrupted = False, img_orig_path = None, img_recon_path = None, img_corrupted_path = None):
+        """
+        This will update the pandas DataFrame stored in EVALUATION_METRICS.csv.
+        :param img_orig:
+        :param img_recon:
+        :param img_corrupted:
+        :return:
+        """
+
+        # Change the type
+        img_orig = img_orig.astype(int)
+        img_recon = img_recon.astype(int)
+        img_corrupted = img_corrupted.astype(int)
+
+
+        # Get the Data
+        data = {}
+
+        # Get the Run Time data
+        run_time = self.dictionary_learning_time + self.reconstruction_time
+        run_time_learning = self.dictionary_learning_time
+        run_time_recon = self.reconstruction_time
+        data['Run Time'] = run_time
+        data['Run Time (learning)'] = run_time_learning
+        data['Run Time (reconstruction)'] = run_time_recon
+
+        # Get the Path info
+        data['Original Path'] = img_orig_path
+        data['Reconstructed Path'] = img_recon_path
+        data['Corrupted Path'] = img_corrupted_path
+
+        # Get the Parameter info
+        data['param: K'] = int(self.K)
+        data['param: N'] = int(self.sampler.num_samples)
+        data['param: L'] = int(self.L)
+        data['param: Iters'] = int(self.iters)
+
+        ### Compute the Errors
+
+        # Get the image vectors
+        vec_orig = img_orig.copy().flatten()
+        vec_recon = img_recon.copy().flatten()
+        vec_corrupt = img_corrupted.copy().flatten()
+
+        # Compute RMSE
+        M = len(temp_indicies)
+        MSE = ((vec_orig[temp_indicies].astype(int) - vec_recon[temp_indicies].astype(int))**2).sum() / M
+        RMSE = np.sqrt(MSE)
+        data['RMSE'] = RMSE
+
+        # Compute PSNR
+        peak_signal = vec_orig[temp_indicies].max()
+        PSNR = 10 * (2 * np.log10(peak_signal) - np.log10(MSE))
+        data['PSNR'] = PSNR
+
+        # Compute RMSE Gain
+        MSE_corrupt = ((vec_orig.astype(int) - vec_corrupt.astype(int))**2).sum() / len(vec_orig)
+        RMSE_corrupt = np.sqrt(MSE_corrupt)
+        RMSE_Gain = RMSE - RMSE_corrupt
+        data['RMSE Gain'] = RMSE_Gain
+
+        # Compute PNSR Gain
+        PSNR_Corrupt = 10 * (2 * np.log10(peak_signal) - np.log10(MSE_corrupt))
+        PSNR_Gain = PSNR - PSNR_Corrupt
+        data['PSNR Gain'] = PSNR_Gain
+
+        ### Compute SSIM
+
+        mean_orig = vec_orig[temp_indicies].mean()
+        mean_recon = vec_recon[temp_indicies].mean()
+        var_orig = vec_orig[temp_indicies].var()
+        var_recon = vec_recon[temp_indicies].var()
+        sigma_xy = ((vec_orig[temp_indicies] - mean_orig) * (vec_recon[temp_indicies] - mean_recon) ).sum() / M
+
+        C_l, C_c, C_s = 1,1,1
+        luminance_dist = ( 2 * mean_recon * mean_orig + C_l ) / ( mean_recon**2 + mean_orig**2 + C_l)
+        contrast_dist = (2 * np.sqrt(var_recon * var_orig) + C_c) / (var_orig + var_recon + C_c)
+        structural_comp = (sigma_xy + C_s) / (np.sqrt( var_recon * var_orig) + C_s)
+        SSIM = luminance_dist * contrast_dist * structural_comp
+        data['Luminance Dist.'] = luminance_dist
+        data['Contrast Dist.'] = contrast_dist
+        data['Structural Comp.'] = structural_comp
+        data['SSIM'] = SSIM
+
+
+
+        # Load, Update, and Save the DataFrame
+        df = pd.read_csv('EVALUATION_METRICS.csv', index_col=0)
+        index = df.index.max()+1
+        df.loc[index] = data
+        df.to_csv('EVALUATION_METRICS.csv')
+
+
 
 
