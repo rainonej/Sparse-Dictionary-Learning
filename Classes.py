@@ -658,7 +658,16 @@ class DictionaryLearner:
         var_recon = vec_recon[temp_indicies].var()
         sigma_xy = ((vec_orig[temp_indicies] - mean_orig) * (vec_recon[temp_indicies] - mean_recon) ).sum() / M
 
-        C_l, C_c, C_s = 1,1,1
+        # Choice of Constants
+        #C_l, C_c, C_s = 1,1,1
+        # In  this paper, the authors suggest these constants : Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P.:‘Image qualityassessment: from error visibility to structural similarity’,IEEE Trans.Image Process., 2004,13, (4), pp. 600–612
+        const_k1 = .01
+        const_k2 = .03
+        const_L = 255
+        C_l = (const_k1 * const_L)**2
+        C_c = (const_k2 * const_L)**2
+        C_s = C_c/2
+
         luminance_dist = ( 2 * mean_recon * mean_orig + C_l ) / ( mean_recon**2 + mean_orig**2 + C_l)
         contrast_dist = (2 * np.sqrt(var_recon * var_orig) + C_c) / (var_orig + var_recon + C_c)
         structural_comp = (sigma_xy + C_s) / (np.sqrt( var_recon * var_orig) + C_s)
