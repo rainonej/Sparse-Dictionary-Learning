@@ -569,20 +569,149 @@ class DictionaryLearner:
         run_time = time.time() - start_time
         self.reconstruction_time = run_time
 
+        # Compute Error Old way
+
         temp_recon = recon_img.copy().flatten()
         temp_count = count.copy().flatten()
         temp_img = img.copy().flatten()
         temp_indices = np.where(temp_count>min_count)[0]
+
+
         M = len(temp_indices)
         error = np.linalg.norm(temp_img[temp_indices] -  (temp_recon[temp_indices]/temp_count[temp_indices]))/np.sqrt(M)
 
         recon_img = recon_img // count
         recon_img = np.clip(recon_img, 0, 255).astype(np.uint8)
 
+
         # Testing the New Function
         self.update_EVALUATION_METRICS(temp_indices, img_orig, recon_img, img_corrupted=img, )
 
         return (recon_img, error)
+
+    def SPIR_test(self, path, apply_filter = False, min_count = 1, replacement = False):
+        """
+        This is just a test to see how quickly the different error metrics converge when using SPIR without replacement.
+        """
+
+        # Get internal stuff for ease of use
+        D = self.Dictionary
+        patch_shape = self.sampler.patch_shape
+        patch_size = patch_shape[0]
+        L = self.L
+
+        img_orig = load_image(path)
+        if apply_filter:
+            img = self.sampler.filter(img_orig)
+        else:
+            img = img_orig
+        large_shape = img.shape
+        num_rows, num_cols = large_shape[:2]
+        num_patches_rows = num_rows - patch_size + 1
+        num_patches_cols = num_cols - patch_size + 1
+        num_patches = num_patches_cols*num_patches_rows
+
+        #print(f'The image shape is {img.shape} with ')
+
+        # Initialize the reconstructed image
+        recon_img = np.zeros(img.shape, dtype=np.float32)
+        count = np.zeros(img.shape, dtype=np.float32)
+
+        # Initialize the progress bar
+        patch_order = list(range(num_patches))
+        random.shuffle(patch_order)
+        if replacement:
+            patch_order = random.choices(patch_order, k=num_patches)
+        pbar = tqdm(total=num_patches)
+
+        # Get the DataFrame that we store the evaluation metrics in
+        df = pd.DataFrame(columns = ['MSE', 'RMSE', 'PSNR', 'SSIM', 'Luminance Dist.', 'Contrast Dist.', 'Structural Comp.'])
+
+        for i, index in enumerate(patch_order):
+
+            row_idx, col_idx  = (index // num_patches_cols, index % num_patches_cols)
+
+            # Extract the patch from the image
+            patch = img[row_idx:row_idx+patch_size, col_idx:col_idx+patch_size, ...]
+
+            # Compute the sparse coding of the patch
+            sparse_patch_code = self.sparse_rep(patch.flatten().reshape(-1,1), D, L)
+            recon_patch = np.dot(D, sparse_patch_code)
+            recon_patch = recon_patch.reshape(patch_shape)
+
+            # Add the reconstructed patch to the reconstructed image
+            recon_img[row_idx:row_idx+patch_size, col_idx:col_idx+patch_size, ...] += recon_patch
+            count[row_idx:row_idx+patch_size, col_idx:col_idx+patch_size, ...] += 1
+
+            # Increment the counter variable and update the progress bar
+            pbar.update(1)
+
+            # Compute the Error
+            if ((i % 100) == 0):
+
+                # Initialize the data storage
+                data = {}
+
+                # Find all pixels that have been visited
+                temp_count = count.copy().flatten().astype(int)
+                temp_indicies = np.where(temp_count>=min_count)[0]
+                M = len(temp_indicies)
+
+                if M>0:
+
+                    # Get the correct original image vector
+                    vec_orig = img.copy().flatten().astype(int)
+                    vec_orig = vec_orig[temp_indicies]
+
+                    # Get the correct reconstructed image vector
+                    vec_recon = recon_img.copy().flatten().astype(int)
+                    vec_recon = vec_recon[temp_indicies]/temp_count[temp_indicies]
+
+
+                    # Compute RMSE
+                    MSE = ((vec_orig - vec_recon)**2).sum() / M
+                    data['MSE'] = MSE
+                    RMSE = np.sqrt(MSE)
+                    data['RMSE'] = RMSE
+
+                    # Compute PSNR
+                    peak_signal = vec_orig.max()
+                    PSNR = 10 * (2 * np.log10(peak_signal) - np.log10(MSE))
+                    data['PSNR'] = PSNR
+
+                    ### Compute SSIM
+
+                    mean_orig = vec_orig.mean()
+                    mean_recon = vec_recon.mean()
+                    var_orig = vec_orig.var()
+                    var_recon = vec_recon.var()
+                    sigma_xy = ((vec_orig - mean_orig) * (vec_recon - mean_recon) ).sum() / M
+
+                    # Choice of Constants
+                    #C_l, C_c, C_s = 1,1,1
+                    # In  this paper, the authors suggest these constants : Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P.:‘Image qualityassessment: from error visibility to structural similarity’,IEEE Trans.Image Process., 2004,13, (4), pp. 600–612
+                    const_k1 = .01
+                    const_k2 = .03
+                    const_L = 255
+                    C_l = (const_k1 * const_L)**2
+                    C_c = (const_k2 * const_L)**2
+                    C_s = C_c/2
+
+                    luminance_dist = ( 2 * mean_recon * mean_orig + C_l ) / ( mean_recon**2 + mean_orig**2 + C_l)
+                    contrast_dist = (2 * np.sqrt(var_recon * var_orig) + C_c) / (var_orig + var_recon + C_c)
+                    structural_comp = (sigma_xy + C_s) / (np.sqrt( var_recon * var_orig) + C_s)
+                    SSIM = luminance_dist * contrast_dist * structural_comp
+                    data['Luminance Dist.'] = luminance_dist
+                    data['Contrast Dist.'] = contrast_dist
+                    data['Structural Comp.'] = structural_comp
+                    data['SSIM'] = SSIM
+
+
+                    # Record the data
+                    df.loc[i/num_patches] = data
+
+        return df
+
 
     def update_EVALUATION_METRICS(self, temp_indicies, img_orig, img_recon, img_corrupted = False, img_orig_path = None, img_recon_path = None, img_corrupted_path = None):
         """
