@@ -660,7 +660,7 @@ class DictionaryLearner:
                 if M>0:
 
                     # Get the correct original image vector
-                    vec_orig = img.copy().flatten().astype(int)
+                    vec_orig = img_orig.copy().flatten().astype(int)
                     vec_orig = vec_orig[temp_indicies]
 
                     # Get the correct reconstructed image vector
