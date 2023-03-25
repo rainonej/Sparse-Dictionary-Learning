@@ -78,6 +78,16 @@ class Sampler:
                 return sample
             self.filter = filter
 
+        elif filter == 'RB0':
+            # A filter to remove the green channel
+
+            def filter(sample):
+                new_sample = sample.copy()
+                new_sample[:,:,2] = 0
+                return new_sample
+            self.filter = filter
+
+
     def sample(self, N = None):
         """
         A function which returns N samples. It returns a pair of matrices (Y_corrupted, Y_original).
