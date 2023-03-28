@@ -119,14 +119,7 @@ A denoising test on a $200\times 150$ pixel black and white photo of "Tea Eggs".
 **Test 3 - "Persimmon Salad"**
 A color-adding test on a $200\times 150$ pixel "RB0" photo (missing the green channel) of a "Persimmon Salad". The training data will be 9 other similarly sized and colored photos. The parameters are: L = 5, K = 200, N = 800, iters = 10, patch_shape = [8,8,3]
 
-#### Conclusion: Only ~10% of Patches are needed for Most Purposes 
-
-![Graph](SPIR_graph.jpg)
-
-This leads to the creation of the Stochastic Partial Image Reconstruction (SPIR) algorithm
-which randomly samples 20% of the patches in order to reconstruct the image. 
-It then gives an accurate (slightly higher) estimate of the error which a true image
-reconstruction would have. 
+#### Conclusion: Only ~10% of Patches are needed for Most Purposes
 
 # Usage
 
