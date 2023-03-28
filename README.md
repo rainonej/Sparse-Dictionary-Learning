@@ -61,11 +61,43 @@ This is also the metric used in most papers on the subject (including those link
 
 ### Stochastic Partial Image Reconstruction
 
-Reconstructing an image is extremely costly, since we have to preform approximatly 
-1 sparse coding operation per pixel in the image. However, every patch contains the same 
-amount of information. In fact, when the patches are randomly sampled, 
-the first 20% of the patches contain 90-95% of the information. This was confirmed experimentally 
-in this Classes.ipynb notebook. We present the results below. 
+Typically image reconstruction is done by preforming sparse coding on every contiguous patch 
+of the image, and then averaging the results over the whole image. So for patches of size 
+$8 \times 8$ on a $200 \times 150$ pixel image, that would be 
+$(200-7)\times (150 - 7) =  27,599$ sparse coding opperations! 
+However the patches are completely over lapping, which means that hey repeat
+a lot of the same information. Intuitively, we might learn everything we need to learn 
+about the $(x_0, y_0)$ pixel from the first 3 patches that contain it, makeing the 
+next 61 patches redundant. 
+
+This redundancy might not be a problem when there is a lot of compute available. 
+However when running image reconstruction on my personal laptop, compute is at a 
+premium. Because of this, I am using a **Stochastic Partial Image Reconstruction (SPIR)** 
+method. This means that we randomly sample patches until the difference in 
+error between a partially reconstructed image and a fully reconstructed image is 
+below a predetermined threshold. 
+
+In order to determine what percentage of patches are nessisary, we conducted a series 
+of 3 tests. The graph below shows the results of these tests. Note that the 
+SPIR seems to always underestimate. The true error value 
+is shown in the legend for reference. Note that for PSNR better image reconsturctions 
+need more patches, however that is not the case for SSIM. The details on all three
+tests are presented below.
+
+![Graph](Graphs/SPIR_PSNR.jpg)
+![Graph](Graphs/SPIR_SSIM.jpg)
+
+
+**Test 1 - "Milanese"**
+A simple reconstuction test on a $200\times 150$ pixel black and white photo of chicken "Milanese", where the training data is the same image. Parameters are: L=5, K=100, N=300, iters=10, patch_shape = [8,8]
+
+**Test 2 - "Tea Eggs"**
+A denoising test on a $200\times 150$ pixel black and white photo of "Tea Eggs". The training data will be 4 other photos of the same size. The added noise has std = 100. The parameters are: L = 10, K = 200, N = 500, iters = 20, patch_shape = [8,8]
+
+**Test 3 - "Persimmon Salad"**
+A color-adding test on a $200\times 150$ pixel "RB0" photo (missing the green channel) of a "Persimmon Salad". The training data will be 9 other similarly sized and colored photos. The parameters are: L = 5, K = 200, N = 800, iters = 10, patch_shape = [8,8,3]
+
+#### Conclusion: Only ~10% of Patches are needed for Most Purposes 
 
 ![Graph](SPIR_graph.jpg)
 
