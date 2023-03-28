@@ -53,12 +53,34 @@ We are slightly modifying the algorithm by replacing unused atoms as soon as the
 We are replacing them with the worst respresented signal. This method was examined and 
 determined to be optimimal in the following paper: https://cs.unibuc.ro//~pirofti/papers/Irofti16_AtomReplacement.pdf.
 
-### Error Determination
+## Evaluation Metrics
 
-Because the algorithms are designed to minimize the $L^2$-distance between the signal and its 
-sparse representation, that is the error metric we will be using (after normalizing by an appropriate constant). 
-This is also the metric used in most papers on the subject (including those linked in this ReadMe).
+The simplest and most intuitive evalutation metric is the Mean Square Error ($MSE$)
+$$MSE = \frac{1}{d}|| y - x ||_2^2$$
+between a signal $y$ and its approximation $x$.
+However a standard in the industry is to use Peak Signal to Noise Ratio ($PSNR$)
+$$ PSNR = 10 \log_{10}\Big( \frac{ ||y||_\infty^2}{ \frac{1}{d}||y - x ||_2^2}\Big) $$
+which since the majority of signals will have $||y||_\infty \approx 255$, the $PSNR$ has a logrithmic relation to the $MSE$, and therefore contain an identical amount of information.
 
+Another standard evaluation metric is the Structural Similarity Index Measure ($SSIM$),
+$$ SSIM(y, x) = l(y, x) c(y, x) s(y,x), $$
+which is the product of three distortion measurements. This takes values in $[-1,1]$ where higher is better. Note that this value is in practice never negative, ast that would require special engineering, so we consider it as a value in $[0,1]$.
+Luminance Distortion
+$$ l(y,x) = \frac{2 \mu_y \mu_x + C_l}{\mu_y^2 + \mu_x^2 + C_l} $$
+Contrast Distortion
+$$ c(y,x) = \frac{2 \sigma_y \sigma_x + C_c}{\sigma_Y ^2 + \sigma_x^2 + C_c} $$
+Structural Comparison
+$$ s(y,x) = \frac{ \sigma_{yx} ++ C_s}{ \sigma_Y \sigma_x + C_s} $$
+where
+$$\mu_x = \frac{1}{d} \sum x^{(i)} $$
+$$\sigma_x^2 = \frac{1}{d} \sum(x^{(i)} - \mu_x)^2 $$
+$$\sigma_{xy} = \frac{1}{d} \sum (x^{(i)} - \mu_x)(y^{(i)} - \mu_y) $$
+
+These metrics give an idea of what area an image reconstruction is doing better or worse on.
+
+We will measure all of these qnatities, plus run-time (as a proxy for "compute") and gain (the improvement of these metrics). We will typically only display the $PSNR$, however when a more indepth analysis is called for, we will display the rest.
+
+*A comparison of these metrics is found in here https://ietresearch.onlinelibrary.wiley.com/doi/epdf/10.1049/iet-ipr.2012.0489
 ### Stochastic Partial Image Reconstruction
 
 Typically image reconstruction is done by preforming sparse coding on every contiguous patch 
