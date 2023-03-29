@@ -523,7 +523,7 @@ class DictionaryLearner:
 
         return recon_img
 
-    def SPIR(self, path, percent = .2, min_count = 1, apply_filter = False):
+    def SPIR(self, path, percent = .2, min_count = 1, apply_filter = False, recon_image_path = False):
 
         # Start the timer
         start_time = time.time()
@@ -551,13 +551,14 @@ class DictionaryLearner:
         recon_img = np.zeros(img.shape, dtype=np.float32)
         count = np.zeros(img.shape, dtype=np.float32)
 
+
         # Initialize the progress bar
-        total = int(percent*num_patches)
-        pbar = tqdm(total=total)
+        patch_order = list(range(num_patches))
+        patch_order = list(random.sample(patch_order, int(percent * num_patches)))
+        pbar = tqdm(total=len(patch_order))
 
-        for i in range(total):
+        for i, index in enumerate(patch_order):
 
-            index = random.randint(0,num_patches-1)
             row_idx, col_idx  = (index // num_patches_cols, index % num_patches_cols)
 
             # Extract the patch from the image
@@ -584,7 +585,7 @@ class DictionaryLearner:
         temp_recon = recon_img.copy().flatten()
         temp_count = count.copy().flatten()
         temp_img = img.copy().flatten()
-        temp_indices = np.where(temp_count>min_count)[0]
+        temp_indices = np.where(temp_count>=min_count)[0]
 
 
         M = len(temp_indices)
@@ -593,9 +594,13 @@ class DictionaryLearner:
         recon_img = recon_img // count
         recon_img = np.clip(recon_img, 0, 255).astype(np.uint8)
 
+        # If there's a recon_image_path then save it
+        if recon_image_path:
+            cv2.imwrite(recon_image_path, recon_img)
+
 
         # Testing the New Function
-        self.update_EVALUATION_METRICS(temp_indices, img_orig, recon_img, img_corrupted=img, )
+        self.update_EVALUATION_METRICS(temp_indices, img_orig, recon_img, img_corrupted=img, img_orig_path = path,  img_recon_path = recon_image_path, img_corrupted_path = None, percent = percent)
 
         return (recon_img, error)
 
@@ -723,7 +728,7 @@ class DictionaryLearner:
         return df
 
 
-    def update_EVALUATION_METRICS(self, temp_indicies, img_orig, img_recon, img_corrupted = False, img_orig_path = None, img_recon_path = None, img_corrupted_path = None):
+    def update_EVALUATION_METRICS(self, temp_indicies, img_orig, img_recon, img_corrupted = False, img_orig_path = None, img_recon_path = None, img_corrupted_path = None, percent = None):
         """
         This will update the pandas DataFrame stored in EVALUATION_METRICS.csv.
         :param img_orig:
@@ -740,6 +745,9 @@ class DictionaryLearner:
 
         # Get the Data
         data = {}
+
+        # Get the Percent Reconstruction Data
+        data['Partial or Full'] = percent
 
         # Get the Run Time data
         run_time = self.dictionary_learning_time + self.reconstruction_time
