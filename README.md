@@ -252,3 +252,7 @@ of which parameters cost more run time and decrease error.
 
 As you can see, increase the number of atoms is by far the most 
 cost effective way to decrease error. 
+
+Of course we can do a much better analysis by running many more tests.
+
+<img alt="Measuing PSNR versus Run Time" height="300" src="Graphs/Full PSNR vs Run Time for various parameters.jpg" width="400"/>
