@@ -1,6 +1,6 @@
 import argparse
 import yaml
-from Classes import *
+from sparse_dic_learning.Classes import *
 import pickle
 import numpy as np
 
