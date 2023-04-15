@@ -14,7 +14,7 @@ def main():
     
     for image, image_file_name in iter(zip(compressed_images, image_file_names)):
         print(image_file_name)
-        save_image(image, image_file_name)
+        save_image(image_file_name, image)
 
 def get_image(image_path):
     try:
@@ -34,12 +34,11 @@ def convert_to_gray_scale(image):
 
 def save_image(image_file_name, image):
     #make compressed directory in images if it doesn't exist
-    target_path = os.path.join(IMAGES_SOURCE_DIR, "compressed_test")
+    target_path = os.path.join(IMAGES_SOURCE_DIR, "compressed")
     os.makedirs(target_path, exist_ok=True)
 
     try:
-        image_path = os.join.path(target_path, image_file_name)
-        print(image_path)
+        image_path = os.path.join(target_path, image_file_name)
         cv2.imwrite(image_path, image)
         print(f"Image saved to {image_path}")
 
