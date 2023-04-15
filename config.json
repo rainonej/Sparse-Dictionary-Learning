@@ -1,3 +1,16 @@
 {
-    "IMAGES_SOURCE_DIR":"./images"
+    "IMAGES_SOURCE_DIR":"./images",
+    "OUTPUT_DICTIONARY_PATH": "./output/training_dictionary.pkl",
+    "IMAGE_RESCONSTRUCTION_DIR": "./images/reconstructed",
+    "training_image_paths": {"image_1": "./images/compressed/cheese_board.jpg", 
+                            "image_2": "./images/compressed/octopus_test_image.jpg"},
+    "params":{
+                    "N": 300,
+                    "K" : 150,
+                    "L" : 10,
+                    "I" : 10,
+                    "Patch_Shape" : [8,8],
+                    "Partial" : "False"
+  
+    }
 }
