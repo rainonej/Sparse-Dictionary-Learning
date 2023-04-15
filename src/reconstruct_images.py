@@ -8,22 +8,23 @@ import argparse
 
 import utils
 
-def main():
-    params, paths, output_image_path = load_params()
+def main(output_image_path, input_image_path):
 
-    reconstruct_image(output_image_path= output_image_path,
-                     paths = paths,
+    params = load_params()
+
+    image = reconstruct_image(
+                     input_image_path= input_image_path,
                      D =  load_dictionary(),
                      patch_shape = params["Patch_Shape"], 
                      partial =params["Partial"])
+    
+    save_images(output_image_path, image)
 
 def load_params():
     config = utils.load_config()
     params = config["params"]
-    paths = list(config["training_image_paths"].values())
-    reconstruct_image_path = config["IMAGE_RESCONSTRUCTION_DIR"]
-   
-    return params, paths, reconstruct_image_path
+  
+    return params
 
 def load_dictionary():
     output_dictionary = utils.load_config()["OUTPUT_DICTIONARY_PATH"]
@@ -34,9 +35,8 @@ def load_dictionary():
 
     return D
 
-def reconstruct_image(output_image_path, paths, D, patch_shape, partial):
+def reconstruct_image(input_image_path, D, patch_shape, partial):
 
-    input_image_path = paths[]
     sam = Sampler(patch_shape=patch_shape)
     learner = DictionaryLearner(sampler=sam, Dictionary=D, algo = 'OMP')
     print('Got learner')
@@ -53,14 +53,15 @@ def reconstruct_image(output_image_path, paths, D, patch_shape, partial):
 
         return img
 
-def save_images(image_file_path, image):
-    cv2.imwrite(image_file_path, image)
+def save_images(output_image_path, image):
+    cv2.imwrite(output_image_path, image)
     print("Saved reconstructed image")
 
 def parse_args():
 
     parser = argparse.ArgumentParser(description='Process training data.')
-    parser.add_argument('--output-image-path', type=str, required=True, help='Path to the input image.')
+    parser.add_argument('--output-image-path', type=str, required=True, help='Path to the output image.')
+    parser.add_argument('--input-image-path', type=str, required=True, help='Path to the input image.')
     args = parser.parse_args()
 
     return args
@@ -70,4 +71,5 @@ if __name__ == "__main__":
 
    args = parse_args()
 
-   main(output_image_path = args.output_image_path)
+   main(output_image_path = args.output_image_path,
+        input_image_path = args.input_image_path)

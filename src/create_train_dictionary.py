@@ -9,26 +9,27 @@ import os
 import utils
 
 def main():
-    training_params, paths = load_params()
 
-    print(training_params)
+    params, paths = load_params()
+
+    print(params)
     print(paths)
 
     D=get_dictionary(paths=paths, 
-                    num_samples= training_params["N"], 
-                    L = training_params["L"], 
-                    K = training_params["K"], 
-                    I = training_params["I"], 
-                    patch_shape = np.array(training_params['Patch_Shape']))
+                    num_samples= params["N"], 
+                    L = params["L"], 
+                    K = params["K"], 
+                    I = params["I"], 
+                    patch_shape = np.array(params['Patch_Shape']))
 
     save_dictionary(D)
 
 def load_params():
     config = utils.load_config()
-    training_params = config["training_params"]
+    params = config["params"]
     paths = list(config["training_image_paths"].values())
    
-    return training_params, paths
+    return params, paths
 
 def get_dictionary(paths, num_samples, L, K, I, patch_shape):
     sam = Sampler(paths = paths, num_samples = num_samples, patch_shape=patch_shape)
@@ -51,8 +52,8 @@ def save_dictionary(D):
 
 if __name__ == "__main__":
     
-   training_params, paths= load_params()
+   params, paths= load_params()
    print(paths)
-   print(training_params)
+   print(params)
 
    main()
