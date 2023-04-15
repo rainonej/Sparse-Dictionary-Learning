@@ -1,4 +1,0 @@
-# This is the image_paths.yaml file. It contains a list of all the paths that the training images will be pulled from.
-paths:
-  - Compressed Images/cheese_board.jpg
-  - octopus_test_image.jpg
