@@ -53,7 +53,6 @@ def reconstruct_image(output_image_path, paths, D, patch_shape, partial):
 
         return img
 
-
 def save_images(image_file_path, image):
     cv2.imwrite(image_file_path, image)
     print("Saved reconstructed image")

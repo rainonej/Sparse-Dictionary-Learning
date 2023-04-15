@@ -23,7 +23,6 @@ def get_image(image_path):
     except:
         print("Couldn't find image in specified directory")
 
-
 def resize(image):
     # resize the image to 400x300 pixels
     return cv2.resize(image, (200, 150), interpolation=cv2.INTER_AREA)
